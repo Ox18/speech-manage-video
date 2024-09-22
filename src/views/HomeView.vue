@@ -1,9 +1,11 @@
 <template>
-  <video ref="videoPlayer" width="600" controls>
-    <source src="@/assets/videos/video.mp4" type="video/mp4" />
-    Tu navegador no soporta la reproducción de videos.
-  </video>
-  <GoogleAssistant @commandDetected="command" @triggerCommand="trigger" />
+  <main>
+    <video ref="videoPlayer" width="600" controls>
+      <source src="@/assets/videos/video.mp4" type="video/mp4" />
+      Tu navegador no soporta la reproducción de videos.
+    </video>
+    <GoogleAssistant @commandDetected="command" @triggerCommand="trigger" />
+  </main>
 </template>
 
 <script>
@@ -33,9 +35,6 @@ export default {
       const video = this.$refs.videoPlayer
 
       const resultCommand = googleCommandVideo(value)
-
-      console.log('--- result from google')
-      console.log(resultCommand)
 
       if (!resultCommand) {
         console.log('Comando no válido:', value)
@@ -98,12 +97,11 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  gap: 20px;
+  gap: 100px;
 }
 
 video {
-  border: 2px solid #ccc;
+  border: 3px solid #ccc;
   border-radius: 10px;
 }
 </style>
