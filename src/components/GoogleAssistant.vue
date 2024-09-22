@@ -1,9 +1,16 @@
 <template>
-    <slot></slot>
+    <div>
+        <Listener v-if="isListeningForCommand" />
+    </div>
 </template>
 <script>
+import Listener from './Listener.vue'
+
 export default {
     name: 'ListenerGlobal',
+    components: {
+        Listener
+    },
     data() {
         return {
             isListeningForCommand: false, // Bandera para saber si está en modo escucha de comandos
@@ -41,7 +48,6 @@ export default {
 
             // Detectar "ok google" y cambiar a modo escucha de comando
             if (transcript.includes('ok google') && !this.isListeningForCommand) {
-                console.log('Activación detectada:', transcript)
                 this.$emit('triggerCommand', 'listener')
                 this.isListeningForCommand = true
                 this.recognition.stop()
@@ -88,7 +94,7 @@ export default {
                 const current = event.resultIndex
                 const transcript = event.results[current][0].transcript.trim().toLowerCase()
 
-                this.$emit('commandDetected', transcript) // Emitir el comando detectado
+                this.$emit('commandDetected', this.cleanTranscription(transcript)) // Emitir el comando detectado
                 this.$emit('triggerCommand', 'stop') // Emitir que finalizó la escucha
                 this.isListeningForCommand = false
                 this.commandRecognition.stop()
@@ -105,6 +111,25 @@ export default {
                     this.listenForCommand()
                 }
             }
+        },
+        cleanTranscription(transcription) {
+            let transcriptCleaned = transcription.trim().toLowerCase()
+
+            console.log(`[Google Assistant] - Comando detectado: ${transcriptCleaned}`)
+
+            const splitted = transcriptCleaned.split(' ')
+
+            if (splitted.every((val, i, arr) => val === arr[0])) {
+                transcriptCleaned = splitted[0]
+            }
+
+            transcriptCleaned = transcriptCleaned.replace('ok google', '')
+
+            transcriptCleaned = transcriptCleaned.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
+            console.log(`[Google Assistant] - Comando limpio: ${transcriptCleaned}`)
+
+            return transcriptCleaned
         }
     }
 }
